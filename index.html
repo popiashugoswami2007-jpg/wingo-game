@@ -1,0 +1,289 @@
+<!DOCTYPE html>
+<html>
+<head>
+<title>Daman Advanced</title>
+
+<style>
+
+body{
+margin:0;
+font-family:Arial;
+background:#0f172a;
+color:white;
+text-align:center;
+}
+
+.header{
+background:#111827;
+padding:15px;
+font-size:22px;
+}
+
+.wallet{
+background:#1f2937;
+padding:10px;
+margin:10px;
+border-radius:10px;
+}
+
+.timer{
+font-size:20px;
+color:#facc15;
+}
+
+.colors{
+display:flex;
+justify-content:center;
+gap:10px;
+margin-top:15px;
+}
+
+.colors button{
+padding:12px 20px;
+border:none;
+border-radius:10px;
+color:white;
+font-size:16px;
+}
+
+.green{background:#22c55e}
+.red{background:#ef4444}
+.violet{background:#a855f7}
+
+.numbers{
+display:grid;
+grid-template-columns:repeat(5,70px);
+gap:10px;
+justify-content:center;
+margin-top:20px;
+}
+
+.num{
+width:70px;
+height:70px;
+border-radius:50%;
+display:flex;
+align-items:center;
+justify-content:center;
+font-size:20px;
+color:white;
+cursor:pointer;
+}
+
+.greenNum{background:#22c55e}
+.redNum{background:#ef4444}
+.half{
+background:linear-gradient(90deg,#ef4444 50%,#22c55e 50%);
+}
+
+.history{
+margin-top:20px;
+}
+
+.historyRow{
+display:flex;
+justify-content:center;
+gap:6px;
+margin-top:8px;
+}
+
+.ball{
+width:30px;
+height:30px;
+border-radius:50%;
+}
+
+.greenBall{background:#22c55e}
+.redBall{background:#ef4444}
+.violetBall{background:#a855f7}
+
+.resultBox{
+font-size:24px;
+margin-top:10px;
+color:#facc15;
+}
+
+.admin{
+margin-top:25px;
+background:#1f2937;
+padding:10px;
+}
+
+input{
+padding:8px;
+border-radius:8px;
+border:none;
+}
+
+</style>
+
+</head>
+
+<body>
+
+<div class="header">
+Daman WinGo Advanced
+</div>
+
+<div class="wallet">
+
+Wallet ₹<span id="wallet">100</span>
+
+<div class="timer">
+Time: <span id="time">30</span>
+</div>
+
+</div>
+
+Bet Amount
+<input type="number" id="amount" value="10">
+
+<div class="colors">
+
+<button class="green" onclick="betColor('Green')">Green</button>
+<button class="violet" onclick="betColor('Violet')">Violet</button>
+<button class="red" onclick="betColor('Red')">Red</button>
+
+</div>
+
+<div class="numbers">
+
+<div class="num half" onclick="betNumber(0)">0</div>
+<div class="num greenNum" onclick="betNumber(1)">1</div>
+<div class="num redNum" onclick="betNumber(2)">2</div>
+<div class="num greenNum" onclick="betNumber(3)">3</div>
+<div class="num redNum" onclick="betNumber(4)">4</div>
+<div class="num half" onclick="betNumber(5)">5</div>
+<div class="num redNum" onclick="betNumber(6)">6</div>
+<div class="num greenNum" onclick="betNumber(7)">7</div>
+<div class="num redNum" onclick="betNumber(8)">8</div>
+<div class="num greenNum" onclick="betNumber(9)">9</div>
+
+</div>
+
+<div class="resultBox" id="result"></div>
+
+<div class="history">
+
+<h3>Result History</h3>
+
+<div id="history"></div>
+
+</div>
+
+<div class="admin">
+
+<h3>Admin Panel</h3>
+
+<button class="green" onclick="setAdminColor('Green')">Green</button>
+<button class="red" onclick="setAdminColor('Red')">Red</button>
+<button class="violet" onclick="setAdminColor('Violet')">Violet</button>
+
+<br><br>
+
+<input type="number" id="adminNumber" placeholder="Number 0-9">
+
+<button onclick="setAdminNumber()">Set Number</button>
+
+</div>
+
+<script>
+
+let wallet=100
+let time=30
+
+let betColorValue=""
+let betNumberValue=""
+
+function betColor(color){
+betColorValue=color
+betNumberValue=""
+alert("Bet on "+color)
+}
+
+function betNumber(num){
+betNumberValue=num
+betColorValue=""
+alert("Bet on number "+num)
+}
+
+function setAdminColor(color){
+localStorage.setItem("adminColor",color)
+}
+
+function setAdminNumber(){
+let num=document.getElementById("adminNumber").value
+localStorage.setItem("adminNumber",num)
+}
+
+setInterval(()=>{
+
+time--
+document.getElementById("time").innerText=time
+
+if(time==0){
+
+let num=localStorage.getItem("adminNumber")
+
+if(num==null){
+num=Math.floor(Math.random()*10)
+}else{
+num=parseInt(num)
+localStorage.removeItem("adminNumber")
+}
+
+let color=localStorage.getItem("adminColor")
+
+if(!color){
+
+if(num==0 || num==5){
+color="Violet"
+}
+else if(num%2==0){
+color="Red"
+}
+else{
+color="Green"
+}
+
+}else{
+localStorage.removeItem("adminColor")
+}
+
+document.getElementById("result").innerText="Result: "+num+" "+color
+
+let amount=parseInt(document.getElementById("amount").value)
+
+let win=false
+
+if(betNumberValue==num) win=true
+if(betColorValue==color) win=true
+
+if(win){
+wallet+=amount*2
+}else{
+wallet-=amount
+}
+
+document.getElementById("wallet").innerText=wallet
+
+let ball=""
+
+if(color=="Green") ball='<div class="ball greenBall"></div>'
+if(color=="Red") ball='<div class="ball redBall"></div>'
+if(color=="Violet") ball='<div class="ball violetBall"></div>'
+
+document.getElementById("history").innerHTML=ball+document.getElementById("history").innerHTML
+
+time=30
+betColorValue=""
+betNumberValue=""
+
+}
+
+},1000)
+
+</script>
+
+</body>
+  </html>
