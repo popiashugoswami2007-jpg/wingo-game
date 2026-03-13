@@ -1,118 +1,86 @@
 <!DOCTYPE html>
 <html>
 <head>
-<title>Daman Advanced</title>
+<title>WinGo Game</title>
 
 <style>
 
 body{
-margin:0;
 font-family:Arial;
-background:#0f172a;
-color:white;
 text-align:center;
+background:#111;
+color:white;
 }
 
 .header{
-background:#111827;
+background:red;
 padding:15px;
 font-size:22px;
 }
 
 .wallet{
-background:#1f2937;
+background:#222;
 padding:10px;
 margin:10px;
 border-radius:10px;
 }
 
 .timer{
-font-size:20px;
-color:#facc15;
+font-size:22px;
+color:yellow;
 }
 
-.colors{
-display:flex;
-justify-content:center;
-gap:10px;
-margin-top:15px;
-}
-
-.colors button{
-padding:12px 20px;
+button{
+padding:10px 20px;
+margin:5px;
 border:none;
-border-radius:10px;
+border-radius:6px;
 color:white;
-font-size:16px;
 }
 
-.green{background:#22c55e}
-.red{background:#ef4444}
-.violet{background:#a855f7}
+.green{background:green;}
+.red{background:red;}
+.violet{background:purple;}
 
 .numbers{
 display:grid;
-grid-template-columns:repeat(5,70px);
+grid-template-columns:repeat(5,60px);
 gap:10px;
 justify-content:center;
 margin-top:20px;
 }
 
 .num{
-width:70px;
-height:70px;
+width:60px;
+height:60px;
 border-radius:50%;
 display:flex;
 align-items:center;
 justify-content:center;
-font-size:20px;
 color:white;
+font-size:18px;
 cursor:pointer;
 }
 
-.greenNum{background:#22c55e}
-.redNum{background:#ef4444}
+.greenNum{background:green;}
+.redNum{background:red;}
+
 .half{
-background:linear-gradient(90deg,#ef4444 50%,#22c55e 50%);
+background:linear-gradient(90deg,red 50%,green 50%);
 }
 
 .history{
 margin-top:20px;
-}
-
-.historyRow{
-display:flex;
-justify-content:center;
-gap:6px;
-margin-top:8px;
-}
-
-.ball{
-width:30px;
-height:30px;
-border-radius:50%;
-}
-
-.greenBall{background:#22c55e}
-.redBall{background:#ef4444}
-.violetBall{background:#a855f7}
-
-.resultBox{
-font-size:24px;
-margin-top:10px;
-color:#facc15;
+background:#222;
+padding:10px;
+border-radius:10px;
 }
 
 .admin{
-margin-top:25px;
-background:#1f2937;
-padding:10px;
-}
-
-input{
-padding:8px;
-border-radius:8px;
-border:none;
+display:none;
+background:black;
+padding:20px;
+margin-top:20px;
 }
 
 </style>
@@ -121,13 +89,13 @@ border:none;
 
 <body>
 
-<div class="header">
-Daman WinGo Advanced
+<div class="header" onclick="secretAdmin()">
+WinGo 30s Game
 </div>
 
 <div class="wallet">
 
-Wallet ₹<span id="wallet">100</span>
+Wallet ₹<span id="wallet">200</span>
 
 <div class="timer">
 Time: <span id="time">30</span>
@@ -138,13 +106,16 @@ Time: <span id="time">30</span>
 Bet Amount
 <input type="number" id="amount" value="10">
 
-<div class="colors">
+<br><br>
 
 <button class="green" onclick="betColor('Green')">Green</button>
 <button class="violet" onclick="betColor('Violet')">Violet</button>
 <button class="red" onclick="betColor('Red')">Red</button>
 
-</div>
+<br>
+
+<button class="green" onclick="betSize('Big')">Big</button>
+<button class="red" onclick="betSize('Small')">Small</button>
 
 <div class="numbers">
 
@@ -161,23 +132,23 @@ Bet Amount
 
 </div>
 
-<div class="resultBox" id="result"></div>
+<h2 id="result"></h2>
 
 <div class="history">
 
-<h3>Result History</h3>
+<h3>Game History</h3>
 
-<div id="history"></div>
+<ul id="history"></ul>
 
 </div>
 
-<div class="admin">
+<div class="admin" id="adminPanel">
 
 <h3>Admin Panel</h3>
 
-<button class="green" onclick="setAdminColor('Green')">Green</button>
-<button class="red" onclick="setAdminColor('Red')">Red</button>
-<button class="violet" onclick="setAdminColor('Violet')">Violet</button>
+<button onclick="setAdminColor('Green')" class="green">Green</button>
+<button onclick="setAdminColor('Red')" class="red">Red</button>
+<button onclick="setAdminColor('Violet')" class="violet">Violet</button>
 
 <br><br>
 
@@ -189,22 +160,46 @@ Bet Amount
 
 <script>
 
-let wallet=100
+let wallet=200
 let time=30
 
 let betColorValue=""
 let betNumberValue=""
+let betSizeValue=""
+
+let tapCount=0
+
+function secretAdmin(){
+
+tapCount++
+
+if(tapCount==5){
+
+let pass=prompt("Enter Admin Password")
+
+if(pass=="admin123"){
+document.getElementById("adminPanel").style.display="block"
+}
+
+tapCount=0
+
+}
+
+}
 
 function betColor(color){
 betColorValue=color
-betNumberValue=""
 alert("Bet on "+color)
 }
 
 function betNumber(num){
 betNumberValue=num
-betColorValue=""
 alert("Bet on number "+num)
+}
+
+function betSize(size){
+betSizeValue=size
+alert("Bet on "+size)
 }
 
 function setAdminColor(color){
@@ -250,6 +245,8 @@ color="Green"
 localStorage.removeItem("adminColor")
 }
 
+let size=(num>=5)?"Big":"Small"
+
 document.getElementById("result").innerText="Result: "+num+" "+color
 
 let amount=parseInt(document.getElementById("amount").value)
@@ -258,6 +255,7 @@ let win=false
 
 if(betNumberValue==num) win=true
 if(betColorValue==color) win=true
+if(betSizeValue==size) win=true
 
 if(win){
 wallet+=amount*2
@@ -267,17 +265,18 @@ wallet-=amount
 
 document.getElementById("wallet").innerText=wallet
 
-let ball=""
+let history=document.getElementById("history")
 
-if(color=="Green") ball='<div class="ball greenBall"></div>'
-if(color=="Red") ball='<div class="ball redBall"></div>'
-if(color=="Violet") ball='<div class="ball violetBall"></div>'
+let li=document.createElement("li")
 
-document.getElementById("history").innerHTML=ball+document.getElementById("history").innerHTML
+li.innerText=num+" "+color
+
+history.prepend(li)
 
 time=30
 betColorValue=""
 betNumberValue=""
+betSizeValue=""
 
 }
 
